@@ -23,6 +23,13 @@ if prefix:
     prefix += " - "
 
 for image in images:
-    with Image.open(image, mode="r") as im:
-        width, height = im.size
-    os.rename(image, image.parent.joinpath(f"{prefix}{width} x {height}{image.suffix}"))
+    try:
+        with Image.open(image, mode="r") as im:
+            width, height = im.size
+        os.rename(image, image.parent.joinpath(f"{prefix}{width} x {height}{image.suffix}"))
+    except FileNotFoundError:
+        print(f"File {image.name} has probably been deleted and cannot be renamed")
+    except PermissionError:
+        print(f"Can not open/rename image {image.name} on {image.parent} due to permissions")
+    except OSError as e:
+        print(f"An unknown OS error occurred when trying to rename image {image.name} on {image.parent}\n{e}")
