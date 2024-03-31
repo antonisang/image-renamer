@@ -11,6 +11,7 @@ if not os.path.isdir(norm_path):
     exit(1)
 
 images = list()
+images_renamed = 0
 
 for extension in ["jpg", "jpeg", "png"]:
     images.extend(norm_path.glob(f"*.{extension}"))
@@ -27,9 +28,12 @@ for image in images:
         with Image.open(image, mode="r") as im:
             width, height = im.size
         os.rename(image, image.parent.joinpath(f"{prefix}{width} x {height}{image.suffix}"))
+        images_renamed += 1
     except FileNotFoundError:
         print(f"File {image.name} has probably been deleted and cannot be renamed")
     except PermissionError:
         print(f"Can not open/rename image {image.name} on {image.parent} due to permissions")
     except OSError as e:
         print(f"An unknown OS error occurred when trying to rename image {image.name} on {image.parent}\n{e}")
+
+print(f"\nRenamed {images_renamed}/{len(images)} images")
